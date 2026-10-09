@@ -1,138 +1,280 @@
+
 ---
-import Menu from '../components/Menu.astro';
-import { getCollection } from 'astro:content';
+import Layout from "../layouts/Layout.astro";
 
-// 读取 writing 集合的文章，按日期倒序
-const posts = (await getCollection('writing'))
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const profile = {
+  name: "本吉·泰勒",
+  englishName: "Benji Taylor",
+  location: "洛杉矶",
+  introduction: [
+    "我出生于伦敦，现在居住在洛杉矶。",
+    "我目前在 SpaceX 担任 X 和 SpaceXAI 的设计主管。",
+    "此前，我曾担任 Coinbase 旗下 Base 部门的设计主管。在此之前，我创立了 Los Feliz Engineering，一家专注于消费软件的公司，该公司开发了实时通讯应用 Honk 和自托管加密钱包 Family。LFE 后来被 Aave Labs 收购，我曾担任 Aave Labs 的首席产品官。",
+    "我喜欢构建和维护用于提升界面质量的开源工具，例如 cmdk、Agentation、Livelane 和 Drawesome。",
+  ],
+};
+
+const groups = [
+  {
+    year: "2026",
+    posts: [
+      { title: "画得真棒", date: "29/07", slug: "/posts/drawn-well" },
+      { title: "直播热线", date: "16/02", slug: "/posts/hotline" },
+      { title: "代理", date: "21/01", slug: "/posts/agents" },
+      { title: "为代理添加注释", date: "16/01", slug: "/posts/annotations" },
+      { title: "与克劳德一起变形图标", date: "13/01", slug: "/posts/icons" },
+    ],
+  },
+  {
+    year: "2025",
+    posts: [
+      { title: "霍基什", date: "23/05", slug: "/posts/hokish" },
+    ],
+  },
+  {
+    year: "2024",
+    posts: [
+      { title: "家庭价值观", date: "08/07", slug: "/posts/family" },
+    ],
+  },
+];
 ---
 
-<html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Liny 的个人网站</title>
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        background: #fff;
-        color: #111;
-        line-height: 1.6;
-      }
-      a {
-        color: #111;
-        text-decoration: underline;
-        text-underline-offset: 3px;
-      }
-      a:hover {
-        opacity: 0.7;
-      }
+<Layout
+  title={`${profile.name} — 个人主页`}
+  description="个人介绍、设计作品与文章"
+>
+  <main class="page">
+    <section class="intro" aria-labelledby="profile-name">
+      <h1 id="profile-name">{profile.name}</h1>
 
-      /* 顶部区域 */
-      header {
-        max-width: 640px;
-        margin: 0 auto;
-        padding: 40px 20px 20px;
-      }
-      header h1 {
-        font-size: 22px;
-        font-weight: 600;
-        margin-bottom: 8px;
-      }
+      <p class="updated">更新于 2026年8月22日</p>
 
-      /* 内容区 */
-      main {
-        max-width: 640px;
-        margin: 0 auto;
-        padding: 0 20px 80px;
-      }
-
-      .bio {
-        font-size: 16px;
-        margin: 24px 0 40px;
-      }
-      .bio p {
-        margin-bottom: 16px;
-      }
-
-      .section-title {
-        font-size: 14px;
-        color: #999;
-        margin-bottom: 16px;
-        letter-spacing: 0.5px;
-      }
-
-      .post-list {
-        list-style: none;
-      }
-      .post-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: baseline;
-        padding: 10px 0;
-        border-bottom: 1px solid #f0f0f0;
-        font-size: 16px;
-      }
-      .post-year {
-        width: 50px;
-        color: #999;
-        font-size: 14px;
-        flex-shrink: 0;
-      }
-      .post-title {
-        flex: 1;
-        padding: 0 12px;
-      }
-      .post-date {
-        color: #999;
-        font-size: 14px;
-        flex-shrink: 0;
-      }
-    </style>
-  </head>
-
-  <body>
-    <header>
-      <h1>Liny</h1>
-      <Menu />
-    </header>
-
-    <main>
       <div class="bio">
-        <p>你好，我是 Liny。</p>
-        <p>这是我的个人网站，正在建设中。</p>
-        <!-- 这里可以继续写你的个人简介 -->
+        {profile.introduction.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+
+        <p>
+          你可以在
+          <a href="https://x.com/" target="_blank" rel="noreferrer">X</a>
+          和
+          <a href="https://www.instagram.com/" target="_blank" rel="noreferrer">
+            Instagram
+          </a>
+          上找到我，或者通过
+          <a href="mailto:hello@example.com">电子邮件</a>
+          联系我。
+        </p>
       </div>
+    </section>
 
-      <div class="section-title">写作</div>
+    <section class="writing" aria-labelledby="writing-title">
+      <h2 id="writing-title">写作</h2>
 
-      <ul class="post-list">
-        {posts.map((post, index) => {
-          const year = post.data.date.getFullYear();
-          const prevYear = index > 0 ? posts[index - 1].data.date.getFullYear() : null;
-          const showYear = year !== prevYear;
+      {groups.map((group) => (
+        <div class="year-group">
+          <div class="year">{group.year}</div>
 
-          return (
-            <li class="post-item">
-              <span class="post-year">{showYear ? year : ''}</span>
-              <a href={`/writing/${post.slug}`} class="post-title">
-                {post.data.title}
+          <div class="post-list">
+            {group.posts.map((post) => (
+              <a class="post" href={post.slug}>
+                <span class="post-title">{post.title}</span>
+                <time class="post-date">{post.date}</time>
               </a>
-              <span class="post-date">
-                {post.data.date.toLocaleDateString('zh-CN', {
-                  day: '2-digit',
-                  month: '2-digit'
-                })}
-              </span>
-            </li>
-          );
-        })}
-      </ul>
-    </main>
-  </body>
-</html>
+            ))}
+          </div>
+        </div>
+      ))}
+    </section>
+
+    <footer class="footer">
+      <div class="footer-line"></div>
+      <p>独立写作 · 持续构建</p>
+    </footer>
+  </main>
+</Layout>
+
+<style>
+  .page {
+    width: min(100% - 88px, 900px);
+    margin: 0 auto;
+    padding: 60px 0 72px;
+  }
+
+  .intro h1 {
+    margin: 0;
+    font-size: 24px;
+    line-height: 1.45;
+    font-weight: 500;
+    letter-spacing: -0.045em;
+  }
+
+  .updated {
+    margin: 8px 0 42px;
+    color: #999;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  .bio {
+    font-size: 18px;
+    line-height: 1.55;
+    letter-spacing: -0.025em;
+    overflow-wrap: anywhere;
+  }
+
+  .bio p {
+    margin: 0 0 25px;
+  }
+
+  .bio a {
+    text-decoration: underline;
+    text-decoration-color: #d5d5d5;
+    text-underline-offset: 3px;
+    transition: text-decoration-color 160ms ease;
+  }
+
+  .bio a:hover {
+    text-decoration-color: #222;
+  }
+
+  .writing {
+    margin-top: 74px;
+  }
+
+  .writing h2 {
+    margin: 0 0 14px;
+    padding-bottom: 13px;
+    border-bottom: 1px solid #ededed;
+    color: #999;
+    font-size: 16px;
+    font-weight: 400;
+  }
+
+  .year-group {
+    display: grid;
+    grid-template-columns: 80px minmax(0, 1fr);
+  }
+
+  .year {
+    padding-top: 20px;
+    color: #999;
+    font-size: 16px;
+    line-height: 1.5;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .post-list {
+    min-width: 0;
+  }
+
+  .post {
+    display: flex;
+    min-height: 62px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 17px 0;
+    border-bottom: 1px solid #ededed;
+    transition: color 160ms ease;
+  }
+
+  .post:last-child {
+    border-bottom: none;
+  }
+
+  .post-title {
+    font-size: 17px;
+    line-height: 1.5;
+    font-weight: 500;
+    overflow-wrap: anywhere;
+  }
+
+  .post-date {
+    flex-shrink: 0;
+    color: #999;
+    font-size: 15px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .post:hover .post-title {
+    color: #777;
+  }
+
+  .footer {
+    margin-top: 72px;
+    color: #999;
+    font-size: 14px;
+  }
+
+  .footer-line {
+    width: 90px;
+    height: 1px;
+    background: #e5e5e5;
+  }
+
+  .footer p {
+    margin-top: 30px;
+  }
+
+  @media (min-width: 1000px) {
+    .page {
+      padding-top: 90px;
+    }
+
+    .bio {
+      max-width: 760px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .page {
+      width: auto;
+      margin: 0 22px;
+      padding: 48px 0 56px;
+    }
+
+    .updated {
+      margin-bottom: 36px;
+      font-size: 15px;
+    }
+
+    .bio {
+      font-size: 17px;
+      line-height: 1.65;
+      letter-spacing: -0.02em;
+    }
+
+    .bio p {
+      margin-bottom: 24px;
+    }
+
+    .writing {
+      margin-top: 64px;
+    }
+
+    .year-group {
+      grid-template-columns: 66px minmax(0, 1fr);
+    }
+
+    .year {
+      padding-top: 19px;
+      font-size: 15px;
+    }
+
+    .post {
+      min-height: 62px;
+      gap: 10px;
+      padding: 16px 0;
+    }
+
+    .post-title {
+      font-size: 16px;
+    }
+
+    .post-date {
+      font-size: 14px;
+    }
+  }
+</style>

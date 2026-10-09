@@ -1,23 +1,167 @@
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
-	</head>
-	<body>
-		<slot />
-	</body>
-</html>
+---
+// src/pages/index.astro
+const posts = [
+  { year: 2026, title: "画得真棒", date: "29/07" },
+  { year: 2026, title: "直播热线", date: "16/02" },
+  { year: 2026, title: "代理", date: "21/01" },
+  { year: 2026, title: "为代理添加注释", date: "16/01" },
+  { year: 2026, title: "与克劳德一起变形图标", date: "13/01" },
+  { year: 2025, title: "霍基什", date: "23/05" },
+  { year: 2024, title: "家庭价值观", date: "08/07" },
+];
+---
 
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>你的名字</title>
+    <style>
+      /* 极简样式 */
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        background: #fff;
+        color: #111;
+        line-height: 1.6;
+      }
+      a { color: #111; text-decoration: underline; text-underline-offset: 3px; }
+      a:hover { opacity: 0.7; }
+
+      /* 顶部黑色导航 */
+      .topbar {
+        background: #000;
+        color: #fff;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 16px;
+        font-size: 15px;
+      }
+      .topbar-left { display: flex; align-items: center; gap: 12px; }
+      .topbar-title { font-weight: 500; }
+      .topbar-domain { opacity: 0.7; font-size: 13px; }
+
+      /* 内容区 */
+      .content {
+        max-width: 640px;
+        margin: 0 auto;
+        padding: 40px 20px 80px;
+      }
+
+      .name {
+        font-size: 22px;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+      .updated {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 32px;
+      }
+
+      .bio {
+        font-size: 16px;
+        margin-bottom: 20px;
+      }
+      .bio p { margin-bottom: 16px; }
+
+      /* 写作列表 */
+      .section-title {
+        font-size: 14px;
+        color: #999;
+        margin: 48px 0 16px;
+        letter-spacing: 0.5px;
+      }
+
+      .post-list {
+        list-style: none;
+      }
+      .post-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding: 10px 0;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 16px;
+      }
+      .post-year {
+        width: 50px;
+        color: #999;
+        font-size: 14px;
+      }
+      .post-title {
+        flex: 1;
+        padding: 0 16px;
+      }
+      .post-date {
+        color: #999;
+        font-size: 14px;
+      }
+
+      /* 底部 */
+      .footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: #fff;
+        border-top: 1px solid #eee;
+        padding: 10px 20px;
+        font-size: 13px;
+        color: #666;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 顶部导航 -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <span>✕</span>
+        <span>▾</span>
+        <span class="topbar-title">你的名字</span>
+        <span class="topbar-domain">yourdomain.com</span>
+      </div>
+      <div>
+        <span>↗</span>
+        <span style="margin-left:12px">⋯</span>
+      </div>
+    </header>
+
+    <main class="content">
+      <h1 class="name">你的名字</h1>
+      <div class="updated">更新于2026年8月22日</div>
+
+      <div class="bio">
+        <p>我出生于伦敦，现在居住在洛杉矶。</p>
+        <p>我目前在SpaceX担任X和SpaceXAI的设计主管。</p>
+        <p>
+          此前，我曾担任 <a href="#">Coinbase</a> 旗下Base部门的设计主管。在此之前，我创立了Los Feliz Engineering，一家专注于消费软件的公司，该公司开发了实时通讯应用Honk和自托管加密钱包Family。LFE后来被 <a href="#">Aave Labs</a> 收购，我曾担任 Aave Labs 的首席产品官。
+        </p>
+        <p>
+          我喜欢构建和维护用于提升界面质量的开源工具，例如 <a href="#">cmdk</a>、<a href="#">Agentation</a>、<a href="#">Liveline</a> 和 <a href="#">Drawesome</a>。
+        </p>
+        <p>
+          你可以在 <a href="#">X</a> 和 <a href="#">Instagram</a> 上找到我，或者通过电子邮件联系我。
+        </p>
+      </div>
+
+      <div class="section-title">写作</div>
+      <ul class="post-list">
+        {posts.map(post => (
+          <li class="post-item">
+            <span class="post-year">{post.year}</span>
+            <span class="post-title">{post.title}</span>
+            <span class="post-date">{post.date}</span>
+          </li>
+        ))}
+      </ul>
+    </main>
+
+    <footer class="footer">
+      8 · 17加利福尼亚州洛杉矶下午
+    </footer>
+  </body>
+</html>

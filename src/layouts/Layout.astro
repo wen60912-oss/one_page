@@ -1,23 +1,25 @@
 ---
-// src/pages/index.astro
-const posts = [
-  { year: 2026, title: "画得真棒", date: "29/07" },
-  { year: 2026, title: "直播热线", date: "16/02" },
-  { year: 2026, title: "代理", date: "21/01" },
-  { year: 2026, title: "为代理添加注释", date: "16/01" },
-  { year: 2026, title: "与克劳德一起变形图标", date: "13/01" },
-  { year: 2025, title: "霍基什", date: "23/05" },
-  { year: 2024, title: "家庭价值观", date: "08/07" },
-];
+import { getCollection } from 'astro:content';
+
+// 获取所有写作文章，并按日期倒序排列
+const posts = (await getCollection('writing'))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+// 按年份分组
+const postsByYear = posts.reduce((acc, post) => {
+  const year = post.data.date.getFullYear();
+  if (!acc[year]) acc[year] = [];
+  acc[year].push(post);
+  return acc;
+}, {} as Record<number, typeof posts>);
 ---
 
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>你的名字</title>
+    <title>本吉·泰勒</title>
     <style>
-      /* 极简样式 */
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -28,7 +30,6 @@ const posts = [
       a { color: #111; text-decoration: underline; text-underline-offset: 3px; }
       a:hover { opacity: 0.7; }
 
-      /* 顶部黑色导航 */
       .topbar {
         background: #000;
         color: #fff;
@@ -43,11 +44,10 @@ const posts = [
       .topbar-title { font-weight: 500; }
       .topbar-domain { opacity: 0.7; font-size: 13px; }
 
-      /* 内容区 */
       .content {
         max-width: 640px;
         margin: 0 auto;
-        padding: 40px 20px 80px;
+        padding: 40px 20px 100px;
       }
 
       .name {
@@ -67,7 +67,6 @@ const posts = [
       }
       .bio p { margin-bottom: 16px; }
 
-      /* 写作列表 */
       .section-title {
         font-size: 14px;
         color: #999;
@@ -90,6 +89,7 @@ const posts = [
         width: 50px;
         color: #999;
         font-size: 14px;
+        flex-shrink: 0;
       }
       .post-title {
         flex: 1;
@@ -98,9 +98,9 @@ const posts = [
       .post-date {
         color: #999;
         font-size: 14px;
+        flex-shrink: 0;
       }
 
-      /* 底部 */
       .footer {
         position: fixed;
         bottom: 0;
@@ -116,13 +116,12 @@ const posts = [
     </style>
   </head>
   <body>
-    <!-- 顶部导航 -->
     <header class="topbar">
       <div class="topbar-left">
         <span>✕</span>
         <span>▾</span>
-        <span class="topbar-title">你的名字</span>
-        <span class="topbar-domain">yourdomain.com</span>
+        <span class="topbar-title">本吉·泰勒</span>
+        <span class="topbar-domain">benji.org</span>
       </div>
       <div>
         <span>↗</span>
@@ -131,7 +130,7 @@ const posts = [
     </header>
 
     <main class="content">
-      <h1 class="name">你的名字</h1>
+      <h1 class="name">本吉·泰勒</h1>
       <div class="updated">更新于2026年8月22日</div>
 
       <div class="bio">
@@ -149,14 +148,29 @@ const posts = [
       </div>
 
       <div class="section-title">写作</div>
+
       <ul class="post-list">
-        {posts.map(post => (
-          <li class="post-item">
-            <span class="post-year">{post.year}</span>
-            <span class="post-title">{post.title}</span>
-            <span class="post-date">{post.date}</span>
-          </li>
-        ))}
+        {Object.entries(postsByYear)
+          .sort((a, b) => Number(b[0]) - Number(a[0])) // 年份倒序
+          .map(([year, yearPosts]) => (
+            yearPosts.map((post, index) => (
+              <li class="post-item">
+                {/* 只在该年份的第一篇文章显示年份 */}
+                <span class="post-year">
+                  {index === 0 ? year : ''}
+                </span>
+                <a href={`/writing/${post.slug}`} class="post-title">
+                  {post.data.title}
+                </a>
+                <span class="post-date">
+                  {post.data.date.toLocaleDateString('zh-CN', {
+                    day: '2-digit',
+                    month: '2-digit',
+                  }).replace('/', '/')}
+                </span>
+              </li>
+            ))
+          ))}
       </ul>
     </main>
 

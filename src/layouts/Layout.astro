@@ -1,181 +1,72 @@
+
 ---
-import { getCollection } from 'astro:content';
+interface Props {
+  title?: string;
+  description?: string;
+}
 
-// 获取所有写作文章，并按日期倒序排列
-const posts = (await getCollection('writing'))
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-
-// 按年份分组
-const postsByYear = posts.reduce((acc, post) => {
-  const year = post.data.date.getFullYear();
-  if (!acc[year]) acc[year] = [];
-  acc[year].push(post);
-  return acc;
-}, {} as Record<number, typeof posts>);
+const {
+  title = "本吉·泰勒",
+  description = "个人主页与文章",
+} = Astro.props;
 ---
 
+<!doctype html>
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>本吉·泰勒</title>
-    <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        background: #fff;
-        color: #111;
-        line-height: 1.6;
-      }
-      a { color: #111; text-decoration: underline; text-underline-offset: 3px; }
-      a:hover { opacity: 0.7; }
-
-      .topbar {
-        background: #000;
-        color: #fff;
-        height: 48px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 16px;
-        font-size: 15px;
-      }
-      .topbar-left { display: flex; align-items: center; gap: 12px; }
-      .topbar-title { font-weight: 500; }
-      .topbar-domain { opacity: 0.7; font-size: 13px; }
-
-      .content {
-        max-width: 640px;
-        margin: 0 auto;
-        padding: 40px 20px 100px;
-      }
-
-      .name {
-        font-size: 22px;
-        font-weight: 600;
-        margin-bottom: 4px;
-      }
-      .updated {
-        font-size: 14px;
-        color: #666;
-        margin-bottom: 32px;
-      }
-
-      .bio {
-        font-size: 16px;
-        margin-bottom: 20px;
-      }
-      .bio p { margin-bottom: 16px; }
-
-      .section-title {
-        font-size: 14px;
-        color: #999;
-        margin: 48px 0 16px;
-        letter-spacing: 0.5px;
-      }
-
-      .post-list {
-        list-style: none;
-      }
-      .post-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: baseline;
-        padding: 10px 0;
-        border-bottom: 1px solid #f0f0f0;
-        font-size: 16px;
-      }
-      .post-year {
-        width: 50px;
-        color: #999;
-        font-size: 14px;
-        flex-shrink: 0;
-      }
-      .post-title {
-        flex: 1;
-        padding: 0 16px;
-      }
-      .post-date {
-        color: #999;
-        font-size: 14px;
-        flex-shrink: 0;
-      }
-
-      .footer {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: #fff;
-        border-top: 1px solid #eee;
-        padding: 10px 20px;
-        font-size: 13px;
-        color: #666;
-        text-align: center;
-      }
-    </style>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1"
+    />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#ffffff" />
+    <title>{title}</title>
   </head>
+
   <body>
-    <header class="topbar">
-      <div class="topbar-left">
-        <span>✕</span>
-        <span>▾</span>
-        <span class="topbar-title">本吉·泰勒</span>
-        <span class="topbar-domain">benji.org</span>
-      </div>
-      <div>
-        <span>↗</span>
-        <span style="margin-left:12px">⋯</span>
-      </div>
-    </header>
-
-    <main class="content">
-      <h1 class="name">本吉·泰勒</h1>
-      <div class="updated">更新于2026年8月22日</div>
-
-      <div class="bio">
-        <p>我出生于伦敦，现在居住在洛杉矶。</p>
-        <p>我目前在SpaceX担任X和SpaceXAI的设计主管。</p>
-        <p>
-          此前，我曾担任 <a href="#">Coinbase</a> 旗下Base部门的设计主管。在此之前，我创立了Los Feliz Engineering，一家专注于消费软件的公司，该公司开发了实时通讯应用Honk和自托管加密钱包Family。LFE后来被 <a href="#">Aave Labs</a> 收购，我曾担任 Aave Labs 的首席产品官。
-        </p>
-        <p>
-          我喜欢构建和维护用于提升界面质量的开源工具，例如 <a href="#">cmdk</a>、<a href="#">Agentation</a>、<a href="#">Liveline</a> 和 <a href="#">Drawesome</a>。
-        </p>
-        <p>
-          你可以在 <a href="#">X</a> 和 <a href="#">Instagram</a> 上找到我，或者通过电子邮件联系我。
-        </p>
-      </div>
-
-      <div class="section-title">写作</div>
-
-      <ul class="post-list">
-        {Object.entries(postsByYear)
-          .sort((a, b) => Number(b[0]) - Number(a[0])) // 年份倒序
-          .map(([year, yearPosts]) => (
-            yearPosts.map((post, index) => (
-              <li class="post-item">
-                {/* 只在该年份的第一篇文章显示年份 */}
-                <span class="post-year">
-                  {index === 0 ? year : ''}
-                </span>
-                <a href={`/writing/${post.slug}`} class="post-title">
-                  {post.data.title}
-                </a>
-                <span class="post-date">
-                  {post.data.date.toLocaleDateString('zh-CN', {
-                    day: '2-digit',
-                    month: '2-digit',
-                  }).replace('/', '/')}
-                </span>
-              </li>
-            ))
-          ))}
-      </ul>
-    </main>
-
-    <footer class="footer">
-      8 · 17加利福尼亚州洛杉矶下午
-    </footer>
+    <slot />
   </body>
 </html>
+
+<style is:global>
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    background: #fff;
+    color: #171717;
+    font-family:
+      Arial,
+      "Helvetica Neue",
+      "Noto Sans SC",
+      "Microsoft YaHei",
+      sans-serif;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    margin: 0;
+    min-width: 320px;
+    background: #fff;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  button {
+    font: inherit;
+  }
+
+  ::selection {
+    color: #fff;
+    background: #222;
+  }
+</style>

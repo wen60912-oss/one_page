@@ -1,27 +1,138 @@
 ---
 import Menu from '../components/Menu.astro';
+import { getCollection } from 'astro:content';
+
+// 读取 writing 集合的文章，按日期倒序
+const posts = (await getCollection('writing'))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 ---
 
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Liny 的个人网站</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        background: #fff;
+        color: #111;
+        line-height: 1.6;
+      }
+      a {
+        color: #111;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+      a:hover {
+        opacity: 0.7;
+      }
+
+      /* 顶部区域 */
+      header {
+        max-width: 640px;
+        margin: 0 auto;
+        padding: 40px 20px 20px;
+      }
+      header h1 {
+        font-size: 22px;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      /* 内容区 */
+      main {
+        max-width: 640px;
+        margin: 0 auto;
+        padding: 0 20px 80px;
+      }
+
+      .bio {
+        font-size: 16px;
+        margin: 24px 0 40px;
+      }
+      .bio p {
+        margin-bottom: 16px;
+      }
+
+      .section-title {
+        font-size: 14px;
+        color: #999;
+        margin-bottom: 16px;
+        letter-spacing: 0.5px;
+      }
+
+      .post-list {
+        list-style: none;
+      }
+      .post-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding: 10px 0;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 16px;
+      }
+      .post-year {
+        width: 50px;
+        color: #999;
+        font-size: 14px;
+        flex-shrink: 0;
+      }
+      .post-title {
+        flex: 1;
+        padding: 0 12px;
+      }
+      .post-date {
+        color: #999;
+        font-size: 14px;
+        flex-shrink: 0;
+      }
+    </style>
   </head>
 
   <body>
     <header>
-      <h1>Liny 的个人网站</h1>
+      <h1>Liny</h1>
       <Menu />
     </header>
 
     <main>
-      <h2>你好，我是 Liny</h2>
+      <div class="bio">
+        <p>你好，我是 Liny。</p>
+        <p>这是我的个人网站，正在建设中。</p>
+        <!-- 这里可以继续写你的个人简介 -->
+      </div>
 
-      <p>这是我的个人网站，正在建设中。</p>
+      <div class="section-title">写作</div>
 
-      <p>
-        <a href="/blog/my-first-post">查看我的第一篇文章</a>
-      </p>
+      <ul class="post-list">
+        {posts.map((post, index) => {
+          const year = post.data.date.getFullYear();
+          const prevYear = index > 0 ? posts[index - 1].data.date.getFullYear() : null;
+          const showYear = year !== prevYear;
+
+          return (
+            <li class="post-item">
+              <span class="post-year">{showYear ? year : ''}</span>
+              <a href={`/writing/${post.slug}`} class="post-title">
+                {post.data.title}
+              </a>
+              <span class="post-date">
+                {post.data.date.toLocaleDateString('zh-CN', {
+                  day: '2-digit',
+                  month: '2-digit'
+                })}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
     </main>
   </body>
 </html>
